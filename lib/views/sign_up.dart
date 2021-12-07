@@ -9,6 +9,11 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final formKey = GlobalKey<FormState>();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,17 +24,27 @@ class _SignUpState extends State<SignUp> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              style: simpleTextStyle(),
-              decoration: textFieldInputDecoration('username'),
-            ),
-            TextField(
-              style: simpleTextStyle(),
-              decoration: textFieldInputDecoration('email'),
-            ),
-            TextField(
-              style: simpleTextStyle(),
-              decoration: textFieldInputDecoration('password'),
+            Form(
+              key: formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: usernameController,
+                    style: simpleTextStyle(),
+                    decoration: textFieldInputDecoration('username'),
+                  ),
+                  TextFormField(
+                    controller: emailController,
+                    style: simpleTextStyle(),
+                    decoration: textFieldInputDecoration('email'),
+                  ),
+                  TextFormField(
+                    controller: passwordController,
+                    style: simpleTextStyle(),
+                    decoration: textFieldInputDecoration('password'),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 8),
             Container(
@@ -46,19 +61,22 @@ class _SignUpState extends State<SignUp> {
               ),
             ),
             const SizedBox(height: 8),
-            Container(
-              alignment: Alignment.center,
-              width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xff007EF4), Color(0xff2A75BC)],
+            GestureDetector(
+              onTap: () {},
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xff007EF4), Color(0xff2A75BC)],
+                  ),
+                  borderRadius: BorderRadius.circular(30),
                 ),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Text(
-                'Sign Up',
-                style: mediumTextStyle(),
+                child: Text(
+                  'Sign Up',
+                  style: mediumTextStyle(),
+                ),
               ),
             ),
             const SizedBox(height: 16),
