@@ -24,6 +24,12 @@ class _SignUpState extends State<SignUp> {
       setState(() {
         isLoading = true;
       });
+      authMethods
+          .signUpWithEmailAndPassword(
+              emailController.text, passwordController.text)
+          .then((val) {
+        print("$val.uid");
+      });
     }
   }
 
