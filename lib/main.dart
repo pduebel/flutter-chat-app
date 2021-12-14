@@ -1,7 +1,6 @@
+import 'package:chat_app/helper/authenticate.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
-import './views/sign_up.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +21,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xff1F1F1F),
         primarySwatch: Colors.blue,
       ),
-      home: const SignUp(),
+      home: const Authenticate(),
     );
   }
 }
