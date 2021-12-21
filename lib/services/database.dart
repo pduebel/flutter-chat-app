@@ -9,6 +9,18 @@ class DatabaseMethods {
   }
 
   uploadUserInfo(userMap) {
-    FirebaseFirestore.instance.collection('users').add(userMap);
+    FirebaseFirestore.instance.collection('users').add(userMap).catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  createChatRoom(chatRoomID, chatRoomMap) {
+    FirebaseFirestore.instance
+        .collection('chatroom')
+        .doc(chatRoomID)
+        .set(chatRoomMap)
+        .catchError((e) {
+      print(e.toString());
+    });
   }
 }

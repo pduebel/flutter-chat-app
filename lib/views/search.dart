@@ -13,7 +13,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   DatabaseMethods databaseMethods = DatabaseMethods();
   TextEditingController searchController = TextEditingController();
-  QuerySnapshot? searchSnapshot;
+  late QuerySnapshot<Map<String, dynamic>> searchSnapshot;
 
   initiateSearch() {
     databaseMethods.getUserByUsername(searchController.text).then((val) {
@@ -21,6 +21,25 @@ class _SearchScreenState extends State<SearchScreen> {
         searchSnapshot = val;
       });
     });
+  }
+
+  void createChatRoomAndStartConversation(String userName) {
+    List<String> users = [userName, myName];
+    databaseMethods.createChatRoom(chatRoomID, users)
+  }
+  Widget searchList() {
+    return searchSnapshot != null
+        ? ListView.builder(
+            shrinkWrap: true,
+            itemCount: searchSnapshot.docs.length,
+            itemBuilder: (context, index) {
+              return SearchTile(
+                userName: searchSnapshot.docs[index].data()["name"],
+                userEmail: searchSnapshot.docs[index].data()["email"],
+              );
+            },
+          )
+        : Container();
   }
 
   @override
@@ -48,7 +67,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      //initiateSearch();
+                      initiateSearch();
                     },
                     child: Container(
                       height: 40,
@@ -65,8 +84,46 @@ class _SearchScreenState extends State<SearchScreen> {
                 ],
               ),
             ),
+            searchList()
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SearchTile extends StatelessWidget {
+  final String userName;
+  final String userEmail;
+
+  const SearchTile({Key? key, required this.userName, required this.userEmail})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(userName, style: mediumTextStyle()),
+              Text(userEmail, style: mediumTextStyle())
+            ],
+          ),
+          Spacer(),
+          GestureDetector(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              padding: EdgeInsets.all(16),
+              child: Text("Message", style: mediumTextStyle()),
+            ),
+          )
+        ],
       ),
     );
   }
