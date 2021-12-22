@@ -1,3 +1,4 @@
+import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/widgets/widgets.dart';
@@ -31,6 +32,8 @@ class _SignUpState extends State<SignUp> {
         'name': usernameController.text,
         'email': emailController.text
       };
+      HelperFunctions.saveUserNameSharedPreference(usernameController.text);
+      HelperFunctions.saveUserEmailSharedPreference(emailController.text);
 
       setState(() {
         isLoading = true;
@@ -41,6 +44,7 @@ class _SignUpState extends State<SignUp> {
               emailController.text, passwordController.text)
           .then((val) {
         databaseMethods.uploadUserInfo(userInfoMap);
+        HelperFunctions.saveUserLoggedInSharedPreference(true);
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => ChatRoom()));
       });

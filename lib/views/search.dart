@@ -13,7 +13,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   DatabaseMethods databaseMethods = DatabaseMethods();
   TextEditingController searchController = TextEditingController();
-  late QuerySnapshot<Map<String, dynamic>> searchSnapshot;
+  QuerySnapshot<Map<String, dynamic>>? searchSnapshot;
 
   initiateSearch() {
     databaseMethods.getUserByUsername(searchController.text).then((val) {
@@ -24,18 +24,18 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void createChatRoomAndStartConversation(String userName) {
-    List<String> users = [userName, myName];
-    databaseMethods.createChatRoom(chatRoomID, users)
+    //List<String> users = [userName, myName];
+    //databaseMethods.createChatRoom(chatRoomID, users)
   }
   Widget searchList() {
     return searchSnapshot != null
         ? ListView.builder(
             shrinkWrap: true,
-            itemCount: searchSnapshot.docs.length,
+            itemCount: searchSnapshot!.docs.length,
             itemBuilder: (context, index) {
               return SearchTile(
-                userName: searchSnapshot.docs[index].data()["name"],
-                userEmail: searchSnapshot.docs[index].data()["email"],
+                userName: searchSnapshot!.docs[index].data()["name"],
+                userEmail: searchSnapshot!.docs[index].data()["email"],
               );
             },
           )
