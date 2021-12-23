@@ -1,4 +1,7 @@
+import 'package:chat_app/helper/constants.dart';
+import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/views/conversation.dart';
 import 'package:chat_app/widgets/widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +27,22 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void createChatRoomAndStartConversation(String userName) {
-    //List<String> users = [userName, myName];
-    //databaseMethods.createChatRoom(chatRoomID, users)
+    if (userName != Constants.myName) {
+      List<String?> users = [userName, Constants.myName];
+      String chatRoomId = HelperFunctions.getChatRoomId(users);
+      Map<String, dynamic> chatRoomMap = {
+        'users': users,
+        'chatroomid': chatRoomId
+      };
+
+      databaseMethods.createChatRoom(chatRoomId, chatRoomMap);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => ConversationScreen()));
+    } else {
+      print("you cannot send message to yourself");
+    }
   }
+
   Widget searchList() {
     return searchSnapshot != null
         ? ListView.builder(
@@ -34,9 +50,9 @@ class _SearchScreenState extends State<SearchScreen> {
             itemCount: searchSnapshot!.docs.length,
             itemBuilder: (context, index) {
               return SearchTile(
-                userName: searchSnapshot!.docs[index].data()["name"],
-                userEmail: searchSnapshot!.docs[index].data()["email"],
-              );
+                  userName: searchSnapshot!.docs[index].data()["name"],
+                  userEmail: searchSnapshot!.docs[index].data()["email"],
+                  messageCallback: createChatRoomAndStartConversation);
             },
           )
         : Container();
@@ -95,8 +111,13 @@ class _SearchScreenState extends State<SearchScreen> {
 class SearchTile extends StatelessWidget {
   final String userName;
   final String userEmail;
+  final Function messageCallback;
 
-  const SearchTile({Key? key, required this.userName, required this.userEmail})
+  const SearchTile(
+      {Key? key,
+      required this.userName,
+      required this.userEmail,
+      required this.messageCallback})
       : super(key: key);
 
   @override
@@ -114,6 +135,9 @@ class SearchTile extends StatelessWidget {
           ),
           Spacer(),
           GestureDetector(
+            onTap: () {
+              messageCallback(userName);
+            },
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.blue,

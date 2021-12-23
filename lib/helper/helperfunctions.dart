@@ -37,4 +37,11 @@ class HelperFunctions {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return await prefs.getString(sharedPreferencesUserEmailKey);
   }
+
+  static getChatRoomId(List<String?> usernameList) {
+    usernameList.sort();
+    String? a = usernameList[0];
+    String? b = usernameList[1];
+    return '$a\_$b';
+  }
 }
