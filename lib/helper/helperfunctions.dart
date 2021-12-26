@@ -23,19 +23,19 @@ class HelperFunctions {
   }
 
   // get data from sared preference
-  static Future<bool?> getUserLoggedInSharedPreference() async {
+  static getUserLoggedInSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getBool(sharedPreferencesLoggedInKey);
+    return prefs.getBool(sharedPreferencesLoggedInKey);
   }
 
   static Future<String?> getUserNameSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getString(sharedPreferencesUserNameKey);
+    return prefs.getString(sharedPreferencesUserNameKey);
   }
 
   static Future<String?> getUserEmailSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getString(sharedPreferencesUserEmailKey);
+    return prefs.getString(sharedPreferencesUserEmailKey);
   }
 
   static getChatRoomId(List<String?> usernameList) {
