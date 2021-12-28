@@ -21,13 +21,32 @@ class DatabaseMethods {
     });
   }
 
-  createChatRoom(chatRoomID, chatRoomMap) {
+  createChatRoom(String chatRoomID, chatRoomMap) {
     FirebaseFirestore.instance
-        .collection('chatroom')
+        .collection('chatrooms')
         .doc(chatRoomID)
         .set(chatRoomMap)
         .catchError((e) {
       print(e.toString());
     });
+  }
+
+  addConverationMessage(String chatRoomID, messageMap) {
+    FirebaseFirestore.instance
+        .collection('chatrooms')
+        .doc(chatRoomID)
+        .collection('messages')
+        .add(messageMap)
+        .catchError((e) {
+      print(e.toString());
+    });
+  }
+
+  getConverationMessages(String chatRoomID) {
+    return FirebaseFirestore.instance
+        .collection('chatrooms')
+        .doc(chatRoomID)
+        .collection('messages')
+        .snapshots();
   }
 }
