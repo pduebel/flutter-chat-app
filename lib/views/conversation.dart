@@ -16,30 +16,35 @@ class ConversationScreen extends StatefulWidget {
 class _ConversationScreenState extends State<ConversationScreen> {
   DatabaseMethods databaseMethods = DatabaseMethods();
   TextEditingController messageController = TextEditingController();
-  late Stream chatMessagesStream;
+  Stream? chatMessagesStream;
 
   Widget chatMessagesList() {
     return StreamBuilder(
       stream: chatMessagesStream,
-      builder: (context, snapshot) {
-        return ListView.builder(
-            itemCount: (snapshot.data! as QuerySnapshot).docs.length,
-            itemBuilder: (context, index) {
-              return MessageTile(
-                message: (snapshot.data! as QuerySnapshot)
-                    .docs[index]["message"]
-                    .toString(),
-              );
-            });
+      builder: (context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.data != null) {
+          return ListView.builder(
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (context, index) {
+                return MessageTile(
+                  message: snapshot.data.docs[index]["message"].toString(),
+                  isSentByMe:
+                      snapshot.data.docs[index]["sender"] == Constants.myName,
+                );
+              });
+        } else {
+          return Container();
+        }
       },
     );
   }
 
   sendMessage() {
     if (messageController.text.isNotEmpty) {
-      Map<String, String?> messageMap = {
+      Map<String, dynamic> messageMap = {
         "message": messageController.text,
-        "sender": Constants.myName
+        "sender": Constants.myName,
+        'timestamp': Timestamp.now().millisecondsSinceEpoch
       };
       databaseMethods.addConverationMessage(widget.chatRoomID, messageMap);
       messageController.clear();
@@ -48,7 +53,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   @override
   void initState() {
-    databaseMethods.getConverationMessages(widget.chatRoomID).then((value) {
+    databaseMethods.getConversationMessages(widget.chatRoomID).then((value) {
       setState(() {
         chatMessagesStream = value;
       });
@@ -108,14 +113,41 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
 class MessageTile extends StatelessWidget {
   final String message;
-  const MessageTile({Key? key, required this.message}) : super(key: key);
+  final bool isSentByMe;
+  const MessageTile({Key? key, required this.message, required this.isSentByMe})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text(
-        this.message,
-        style: mediumTextStyle(),
+      width: MediaQuery.of(context).size.width,
+      alignment: isSentByMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isSentByMe
+                ? [Color(0xff007EF4), Color(0xff2A75BC)]
+                : [Color(0x1AFFFFFF), Color(0x1AFFFFFF)],
+          ),
+          borderRadius: isSentByMe
+              ? BorderRadius.only(
+                  topLeft: Radius.circular(23),
+                  topRight: Radius.circular(23),
+                  bottomLeft: Radius.circular(23),
+                )
+              : BorderRadius.only(
+                  topLeft: Radius.circular(23),
+                  topRight: Radius.circular(23),
+                  bottomRight: Radius.circular(23),
+                ),
+        ),
+        child: Text(message,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+            )),
       ),
     );
   }

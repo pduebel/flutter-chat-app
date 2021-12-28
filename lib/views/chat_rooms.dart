@@ -2,6 +2,7 @@ import 'package:chat_app/helper/authenticate.dart';
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
+import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/search.dart';
 import 'package:flutter/material.dart';
 
@@ -14,9 +15,30 @@ class ChatRoom extends StatefulWidget {
 
 class _ChatRoomState extends State<ChatRoom> {
   AuthMethods authMethods = AuthMethods();
+  DatabaseMethods databaseMethods = DatabaseMethods();
+  late Stream chatRoomsStream;
+
+  Widget chatRoomList() {
+    return StreamBuilder(
+      stream: chatRoomsStream,
+      builder: (context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.data != null) {
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              return ChatRoomsTile();
+            },
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
 
   @override
   void initState() {
+    databaseMethods.getChatRooms(Constants.myName.toString()).then();
     getUserInfo();
     super.initState();
   }
@@ -55,5 +77,14 @@ class _ChatRoomState extends State<ChatRoom> {
                 MaterialPageRoute(builder: (context) => SearchScreen()));
           }),
     );
+  }
+}
+
+class ChatRoomsTile extends StatelessWidget {
+  const ChatRoomsTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
