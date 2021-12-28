@@ -4,6 +4,7 @@ import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/search.dart';
+import 'package:chat_app/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -16,7 +17,7 @@ class ChatRoom extends StatefulWidget {
 class _ChatRoomState extends State<ChatRoom> {
   AuthMethods authMethods = AuthMethods();
   DatabaseMethods databaseMethods = DatabaseMethods();
-  late Stream chatRoomsStream;
+  Stream? chatRoomsStream;
 
   Widget chatRoomList() {
     return StreamBuilder(
@@ -26,7 +27,10 @@ class _ChatRoomState extends State<ChatRoom> {
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
-              return ChatRoomsTile();
+              return ChatRoomsTile(
+                  userName: snapshot.data!.docs[index]['users']
+                      .where((x) => x != Constants.myName)
+                      .toString());
             },
           );
         } else {
@@ -38,13 +42,17 @@ class _ChatRoomState extends State<ChatRoom> {
 
   @override
   void initState() {
-    databaseMethods.getChatRooms(Constants.myName.toString()).then();
     getUserInfo();
     super.initState();
   }
 
   getUserInfo() async {
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
+    databaseMethods.getChatRooms(Constants.myName.toString()).then((value) {
+      setState(() {
+        chatRoomsStream = value;
+      });
+    });
   }
 
   @override
@@ -76,15 +84,41 @@ class _ChatRoomState extends State<ChatRoom> {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SearchScreen()));
           }),
+      body: chatRoomList(),
     );
   }
 }
 
 class ChatRoomsTile extends StatelessWidget {
-  const ChatRoomsTile({Key? key}) : super(key: key);
+  final String userName;
+  const ChatRoomsTile({Key? key, required this.userName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      child: Row(
+        children: [
+          Container(
+            height: 40,
+            width: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: Text(
+              userName.substring(0, 1).toUpperCase(),
+              style: mediumTextStyle(),
+            ),
+          ),
+          SizedBox(width: 8),
+          Text(
+            userName,
+            style: mediumTextStyle(),
+          )
+        ],
+      ),
+    );
   }
 }

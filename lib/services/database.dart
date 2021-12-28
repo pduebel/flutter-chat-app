@@ -51,10 +51,10 @@ class DatabaseMethods {
         .snapshots();
   }
 
-  getChatRooms(String userName) {
-    return FirebaseFirestore.instance
+  getChatRooms(String userName) async {
+    return await FirebaseFirestore.instance
         .collection('chatrooms')
-        .where('user', arrayContains: userName)
+        .where('users', arrayContains: userName)
         .snapshots();
   }
 }
