@@ -1,3 +1,4 @@
+import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:chat_app/models/userid.dart';
 
@@ -40,6 +41,7 @@ class AuthMethods {
 
   Future signOut() async {
     try {
+      HelperFunctions.saveUserLoggedInSharedPreference(false);
       return await _auth.signOut();
     } catch (e) {
       print(e.toString());

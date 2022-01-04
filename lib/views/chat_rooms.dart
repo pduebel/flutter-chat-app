@@ -3,6 +3,7 @@ import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
 import 'package:chat_app/services/auth.dart';
 import 'package:chat_app/services/database.dart';
+import 'package:chat_app/views/conversation.dart';
 import 'package:chat_app/views/search.dart';
 import 'package:chat_app/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -28,9 +29,12 @@ class _ChatRoomState extends State<ChatRoom> {
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (context, index) {
               return ChatRoomsTile(
-                  userName: snapshot.data!.docs[index]['users']
-                      .where((x) => x != Constants.myName)
-                      .toString());
+                userName: snapshot.data!.docs[index]['users']
+                    .where((x) => x != Constants.myName)
+                    .toList()[0]
+                    .toString(),
+                chatRoomID: snapshot.data!.docs[index]['chatroomid'],
+              );
             },
           );
         } else {
@@ -91,33 +95,45 @@ class _ChatRoomState extends State<ChatRoom> {
 
 class ChatRoomsTile extends StatelessWidget {
   final String userName;
-  const ChatRoomsTile({Key? key, required this.userName}) : super(key: key);
+  final String chatRoomID;
+  const ChatRoomsTile(
+      {Key? key, required this.userName, required this.chatRoomID})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      child: Row(
-        children: [
-          Container(
-            height: 40,
-            width: 40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(40),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ConversationScreen(chatRoomID: chatRoomID),
+            ));
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Row(
+          children: [
+            Container(
+              height: 40,
+              width: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: Text(
+                userName.substring(0, 1).toUpperCase(),
+                style: mediumTextStyle(),
+              ),
             ),
-            child: Text(
-              userName.substring(0, 1).toUpperCase(),
+            SizedBox(width: 8),
+            Text(
+              userName,
               style: mediumTextStyle(),
-            ),
-          ),
-          SizedBox(width: 8),
-          Text(
-            userName,
-            style: mediumTextStyle(),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
